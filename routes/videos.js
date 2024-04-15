@@ -54,8 +54,8 @@ router.post("/", function (req, res) {
     channel: "Anonymous",
     image,
     description,
-    views: 0,
-    likes: 0,
+    views: "0",
+    likes: "0",
     duration: "0:20",
     video: "http://localhost:8080/stream",
     timestamp: Date.now(),
@@ -66,6 +66,23 @@ router.post("/", function (req, res) {
   writeVideos(videos);
 
   res.status(201).json(newVideo);
+});
+
+router.put("/:id/likes", function (req, res) {
+  const videos = readVideos();
+  const video = videos.find((video) => video.id === req.params.id);
+
+  if (!video) {
+    return res.status(404).json({ message: "Video not found" });
+  }
+
+  video.likes = new Intl.NumberFormat("en-US").format(
+    +video.likes.replace(/,/g, "") + 1
+  );
+
+  writeVideos(videos);
+
+  res.status(200).json(video);
 });
 
 module.exports = router;
